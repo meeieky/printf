@@ -7,6 +7,7 @@ void print_buffer(char buffer[], int *buff_ind);
  * @format: format.
  * Return: Printed chars.
  */
+
 int _printf(const char *format, ...)
 {
 	int i;
@@ -58,7 +59,7 @@ int _printf(const char *format, ...)
 
 	va_end(list);
 
-	return (printed_chars);
+	return (count);
 }
 
 /**
@@ -66,6 +67,7 @@ int _printf(const char *format, ...)
  * @buffer: Array of chars
  * @buff_ind: Represents the length
  */
+
 void print_buffer(char buffer[], int *buff_ind)
 {
 	if (*buff_ind > 0)
