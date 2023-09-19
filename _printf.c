@@ -3,63 +3,54 @@
 void print_buffer(char buffer[], int *buff_ind);
 
 /**
- * _printf - produces output according to a format
+ * _printf - It prints the functions
  * @format: format.
  * Return: Printed chars.
  */
 
 int _printf(const char *format, ...)
 {
-	int i;
-	char *st;
-	char c;
-	int count = 0;
+	int q, print = 0, printed_chars = 0;
+	int flags, width, precision, size, buff_ind = 0;
 	va_list list;
+	char buffer[BUFF_SIZE];
 
 	if (format == NULL)
 		return (-1);
 
 	va_start(list, format);
 
-	for (i = 0; format && format[i] != '\0'; i++)
+	for (q = 0; format[q] != '\0'; q++)
 	{
-		if (format[i] == '%')
+		if (format[q] != '%')
 		{
-			i++;
-			if (format[i] == '\0')
-				break;
-		}
-		else if (format[i] == 'c')
-		{
-			c = va_arg(list, int);
-			_putchar(c);
-			count++;
-		}
-		else if (format[i] == 's')
-		{
-			st = va_arg(list, char *);
-			while (*st)
-			{
-				_putchar(*st);
-				st++;
-				count++;
-			}
-		}
-		else if (format[i] == '%')
-		{
-			_putchar('%');
-			count++;
+			buffer[buff_ind++] = format[q];
+			if (buff_ind == BUFF_SIZE)
+				print_buffer(buffer, &buff_ind);
+			/* write(1, &format[i], 1);*/
+			printed_chars++;
 		}
 		else
 		{
-			_putchar(format[i]);
-			count++;
+			print_buffer(buffer, &buff_ind);
+			flags = get_flags(format, &q);
+			width = get_width(format, &q, list);
+			precision = get_precision(format, &q, list);
+			size = get_size(format, &q);
+			++q;
+			print = handle_print(format, &q, list, buffer,
+				flags, width, precision, size);
+			if (print == -1)
+				return (-1);
+			printed_chars += print;
 		}
 	}
 
+	print_buffer(buffer, &buff_ind);
+
 	va_end(list);
 
-	return (count);
+	return (printed_chars);
 }
 
 /**
@@ -67,7 +58,6 @@ int _printf(const char *format, ...)
  * @buffer: Array of chars
  * @buff_ind: Represents the length
  */
-
 void print_buffer(char buffer[], int *buff_ind)
 {
 	if (*buff_ind > 0)
